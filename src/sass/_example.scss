@@ -8,21 +8,23 @@
 .search-form{
   display: flex;
   justify-content: center;
-  gap: 10px;
+  gap: 20px;
 
   &_input {
     padding: 10px;
-    border-radius: 10px;
+    border-radius: 20px;
+    border-color: transparent;
   }
 
   &_button {
-    padding: 10px;
-    border-radius: 10px;
-    transition: border-radius 200ms linear;
+    padding: 10px 20px;
+    border-radius: 21px;
+    border-color: transparent;
+    transition: scale 200ms linear;
   }
   
   &_button:hover {
-    border-radius: 20px;
+    scale: 1.1;
   }
   
   &_button:active {
