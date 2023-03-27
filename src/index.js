@@ -38,15 +38,35 @@ async function searchHandler(event) {
 
   if (response.data.hits.length) {
     const markup = makeMarkup(response);
+
     refs.gallery.innerHTML = markup;
+
     refs.loadMoreButton.classList.remove('hidden');
-    Notify.info(`Hooray! We found ${response.data.totalHits} images.`);
     lightbox.refresh();
+
+    Notify.info(`Hooray! We found ${response.data.totalHits} images.`);
   } else {
     Notify.failure(errorMessage);
   }
 };
 
+async function loadMoreHendler() {
+  params.page += 1;
+  const response = await axios.get('https://pixabay.com/api/', { params });
+  
+  if (response.data.hits.length) {
+    const markup = makeMarkup(response);
+    refs.gallery.insertAdjacentHTML("beforeend", markup);
+    lightbox.refresh();
+    scrollDownSmooshly();
+  }
+   
+  if (params.page > 12 || response.data.hits.length < 40) {
+   Notify.info(messageInTheEnd);
+   refs.loadMoreButton.classList.add('hidden');
+  }
+};
+ 
 function makeMarkup(response) {
   let newMarkup = '';
   response.data.hits.forEach(picture => {
@@ -59,44 +79,31 @@ function makeMarkup(response) {
       comments,
       downloads,
     } = picture;
-
+    
     newMarkup += 
-      `<a class="photo-link" href="${largeImageURL}">
-      <div class="photo-card">
-        <img src="${webformatURL}" alt="${tags}" loading="lazy"/>
-          <div class="info">
-            <p class="info-item">
-              <b>Likes</b>${likes}
-            </p>
-            <p class="info-item">
-              <b>Views</b>${views}
-            </p>
-            <p class="info-item">
-              <b>Comments</b>${comments}
-            </p>
-            <p class="info-item">
-              <b>Downloads</b>${downloads}
-            </p>
-          </div>
-      </div></a>`;
+    `<a class="photo-link" href="${largeImageURL}">
+    <div class="photo-card">
+    <img src="${webformatURL}" alt="${tags}" loading="lazy"/>
+    <div class="info">
+    <p class="info-item">
+    <b>Likes</b>${likes}
+    </p>
+    <p class="info-item">
+    <b>Views</b>${views}
+    </p>
+    <p class="info-item">
+    <b>Comments</b>${comments}
+    </p>
+    <p class="info-item">
+    <b>Downloads</b>${downloads}
+    </p>
+    </div>
+    </div></a>`;
   });
   return newMarkup;
- };
-
-
-async function loadMoreHendler() {
-  params.page += 1;
-  const response = await axios.get('https://pixabay.com/api/', { params });
-
-  if (response.data.hits.length) {
-    const markup = makeMarkup(response);
-    refs.gallery.insertAdjacentHTML("beforeend", markup);
-    lightbox.refresh();
-  }
-
-  if (params.page > 12 || response.data.hits.length < 40) {
-    Notify.info(messageInTheEnd);
-    refs.loadMoreButton.classList.add('hidden');
-  }
 };
-
+ 
+function scrollDownSmooshly() {
+  const { height: cardHeight } = document.querySelector(".gallery").firstElementChild.getBoundingClientRect();
+  window.scrollBy({top: cardHeight * 1.5,behavior: "smooth",});
+}
