@@ -17,6 +17,7 @@
     padding: 10px;
     border-radius: 20px;
     border-color: transparent;
+    height: 40px;
   }
 
   &_button {
@@ -57,7 +58,7 @@
 .photo-card {
   display: flex;
   flex-direction: column;
-  width: calc(100% / 4 - 30px);
+  // width: calc(100% / 4 - 30px);
   animation: appearance 1000ms linear forwards;
   border-radius: 5px;
   box-shadow: 0px 5px 5px 0px rgba(0, 0, 0, 0.13);
@@ -107,4 +108,15 @@ img {
 
 .hidden {
   display: none;
+}
+
+.photo-link {
+  width: calc(100% / 4 - 30px);
+  transition: scale 200ms linear;
+  text-decoration: none;
+  color: inherit;
+
+  &:hover {
+    scale: 105%;
+  }
 }

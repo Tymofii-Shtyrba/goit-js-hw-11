@@ -1,6 +1,9 @@
 import axios from "axios";
 import { Notify } from 'notiflix/build/notiflix-notify-aio';
+import SimpleLightbox from "simplelightbox";
+import "simplelightbox/dist/simple-lightbox.min.css";
 
+const lightbox = new SimpleLightbox('.gallery a');
 
 const errorMessage = 'Sorry, there are no images matching your search query. Please try again.';
 const messageInTheEnd = "We're sorry, but you've reached the end of search results.";
@@ -37,6 +40,8 @@ async function searchHandler(event) {
     const markup = makeMarkup(response);
     refs.gallery.innerHTML = markup;
     refs.loadMoreButton.classList.remove('hidden');
+    Notify.info(`Hooray! We found ${response.data.totalHits} images.`);
+    lightbox.refresh();
   } else {
     Notify.failure(errorMessage);
   }
@@ -56,7 +61,8 @@ function makeMarkup(response) {
     } = picture;
 
     newMarkup += 
-      `<div class="photo-card">
+      `<a class="photo-link" href="${largeImageURL}">
+      <div class="photo-card">
         <img src="${webformatURL}" alt="${tags}" loading="lazy"/>
           <div class="info">
             <p class="info-item">
@@ -72,7 +78,7 @@ function makeMarkup(response) {
               <b>Downloads</b>${downloads}
             </p>
           </div>
-      </div>`;
+      </div></a>`;
   });
   return newMarkup;
  };
@@ -85,6 +91,7 @@ async function loadMoreHendler() {
   if (response.data.hits.length) {
     const markup = makeMarkup(response);
     refs.gallery.insertAdjacentHTML("beforeend", markup);
+    lightbox.refresh();
   }
 
   if (params.page > 12 || response.data.hits.length < 40) {
